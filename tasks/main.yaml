@@ -1,0 +1,17 @@
+---
+- name: "Fail if OS/Architecture is not supported"
+  fail:
+    msg: "Installing docker-ce on {{ (ansible_os_family | lower) + '_' + (ansible_architecture | lower) }} is unsupported."
+  when:
+    - "(install_docker_ce_packages | default({}))[(ansible_os_family | lower) + '_' + (ansible_architecture | lower)] is not defined"
+    - "docker_ce is defined"
+  tags:
+    - "docker-ce"
+- name: "Install docker-ce"
+  package:
+    pkg: "{{ install_docker_ce_packages[(ansible_os_family | lower) + '_' + (ansible_architecture | lower)] }}"
+    state: "present"
+  when:
+    - "docker_ce is defined"
+  tags:
+    - "docker-ce"
